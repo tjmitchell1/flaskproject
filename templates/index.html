@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Flask Project</title>
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    </head>
+    <body>
+        <script src="{{url_for('static', filename='onclicks.js')}}"></script>
+        <label>Enter an example balanced bracket string:</label><br>
+        <input id=bracket-input></input>
+        <button class="btn" id="bracket-btn" onclick="bracketButton()">Submit</button><br>
+        <label>Answer: </label>
+        <label id=bracket-label></label>
+    </body>
+</html>
