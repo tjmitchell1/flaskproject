@@ -1,7 +1,7 @@
-<!DOCTYPE html>
 <html>
     <head>
         <title>Brackets</title>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
     </head>
     <body>
         <a href="/logout">Logout</a></li>
@@ -12,13 +12,23 @@
                 <input type="text" name="bracket" value="{{ request.form.bracket }}"></input>
                 <input class="btn button-default" type="submit" value="Submit"></input><br>
             </form>
-            {% if error %}
-                <label>Error: {{ error }}</label>
-            {% endif %}
-            {% if value %}
-                <label>Answer: {{ value }}</label>
-            {% endif %}
-            
-        </div>  
+        {% if error is not none %}
+            <label>Error: {{ error }}</label>
+        {% endif %}
+        {% if value is not none %}
+            <label>Answer: {{ value }}</label>
+        {% endif %}
+            <br><label>History:</label><br>
+        {% if history|length > 0 %} 
+            <ul>
+            {% for item in history %}
+                <li>Test: {{ item.bracket_string }}<br>Value: {{ item.bracket_value }}</li>
+            {% endfor %}
+            </ul>
+            <a href="/history">Show full history</a>
+        {% else %}
+            <label>You have no history.</label>
+        {% endif %}
+        </div>
     </body>
 </html>

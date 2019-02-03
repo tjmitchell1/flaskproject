@@ -7,13 +7,14 @@ import re
 
 # Project Packages
 from src import app, db
-from src.models import User
+from src.models import User, History
+
+from src.scripts.bracket_balance import bracket_balance
 
 @app.route('/')
-@app.route('/index')
 def index():
     if 'username' in session:
-        return render_template('brackets.html', username=escape(session['username']))
+        return redirect(url_for('brackets'))
     else:
         return redirect(url_for('login'))
 
@@ -40,42 +41,44 @@ def signup():
             return render_template('signup.html', error=error)
         user = User.query.filter_by(username=request.form['username']).first()
         if user is None:
-            new_user = User(username=request.form['username'], password_hash=generate_password_hash(request.form['username']))
+            new_user = User(username=request.form['username'], password_hash=generate_password_hash(request.form['password']))
             db.session.add(new_user)
             db.session.commit()
-            return redirect(url_for('login'))
+            session['username'] = request.form['username']
+            return redirect(url_for('brackets'))
         else:
             error = 'User already exists.'
             return render_template('signup.html', error=error)
 
 @app.route('/brackets', methods=['GET', 'POST'])
 def brackets():
+    error = None
+    value = None
+    user = None
+    history = []
+    if 'username' in session:
+        user = User.query.filter_by(username=escape(session['username'])).first()
     if request.method == 'POST':
         reg = r'^[\{\}\[\]\(\)]+$'
         if not re.match(reg, request.form['bracket']):
-            return render_template('brackets.html', value=None, error='Please enter a valid string.')
-        running_list = []
-        opposite_char = {
-            ')': '(',
-            ']': '[',
-            '}': '{'
-        }
-        for char in request.form['bracket']:
-            if char in opposite_char:
-                if len(running_list) > 0 and running_list[-1] == opposite_char[char]:
-                    del running_list[-1]
-                else:
-                    return render_template('brackets.html', value=False, error=None)
-            else:
-                running_list.append(char)
-        if len(running_list) != 0:
-            return render_template('brackets.html', value=False, error=None)
-        return render_template('brackets.html', value=True, error=None)
-    else:
-        if 'username' in session:
-            return render_template('brackets.html', username=escape(session['username']))
+            error = 'Please enter a valid string.'
         else:
+            value = bracket_balance(request.form['bracket'])
+            new_history = History(user_id=user.id, bracket_string=request.form['bracket'], bracket_value=value)
+            db.session.add(new_history)
+            db.session.commit()
+    else:
+        if user is None:
             return redirect(url_for('login'))
+    if user is not None:
+        history = History.query.filter_by(user_id=user.id).order_by(History.id.desc()).limit(5).all()
+    return render_template('brackets.html', value=value, error=error, history=history, username=escape(session['username']))   
+
+@app.route('/history')
+def history():
+    user = User.query.filter_by(username=escape(session['username'])).first()
+    history = History.query.filter_by(user_id=user.id).order_by(History.id.desc()).all()
+    return render_template('history.html', history=history, username=escape(session['username']))
 
 @app.route('/logout')
 def logout():
