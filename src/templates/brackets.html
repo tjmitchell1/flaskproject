@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Brackets</title>
+    </head>
+    <body>
+        <a href="/logout">Logout</a></li>
+        <div class="container">
+            <form action="" method="post">
+                <label>Welcome {{ username }}!</label><br>
+                <label>Please enter a string consisting of the following characters: [, ], (, ), {, }</label><br>
+                <input type="text" name="bracket" value="{{ request.form.bracket }}"></input>
+                <input class="btn button-default" type="submit" value="Submit"></input><br>
+            </form>
+            {% if error %}
+                <label>Error: {{ error }}</label>
+            {% endif %}
+            {% if value %}
+                <label>Answer: {{ value }}</label>
+            {% endif %}
+            
+        </div>  
+    </body>
+</html>

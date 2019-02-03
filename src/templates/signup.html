@@ -1,0 +1,19 @@
+<html>
+  <head>
+    <title>SignUp</title>
+  </head>
+  <body>
+    <div class="container">
+      <h1>SignUp</h1><br>
+      <form action="" method="post">
+        <input type="text" placeholder="Username" name="username" value="{{ request.form.username }}">
+        <input type="password" placeholder="Password" name="password" value="">
+        <input type="password" placeholder="Confirm Password" name="confirmpassword" value="">
+        <input class="btn btn-default" type="submit" value="SignUp">
+      </form>
+      {% if error %}
+        <p class="error"><strong>Error:</strong> {{ error }}
+      {% endif %}
+    </div>
+  </body>
+</html>
