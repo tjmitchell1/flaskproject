@@ -57,7 +57,7 @@ def brackets():
     user = None
     history = []
     if 'username' in session:
-        user = User.query.filter_by(username=escape(session['username'])).first()
+        user = User.query.filter_by(username=session['username']).first()
     if request.method == 'POST':
         reg = r'^[\{\}\[\]\(\)]+$'
         if not re.match(reg, request.form['bracket']):
@@ -76,7 +76,7 @@ def brackets():
 
 @app.route('/history')
 def history():
-    user = User.query.filter_by(username=escape(session['username'])).first()
+    user = User.query.filter_by(username=session['username']).first()
     history = History.query.filter_by(user_id=user.id).order_by(History.id.desc()).all()
     return render_template('history.html', history=history, username=escape(session['username']))
 
